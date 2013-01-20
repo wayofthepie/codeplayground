@@ -1,0 +1,6 @@
+# Ignore files generate from source
+*.pdf
+*.dvi
+*.ps
+*.log
+*.aux
