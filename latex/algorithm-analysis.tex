@@ -1,0 +1,101 @@
+\documentclass[11pt,a4paper]{report}
+
+\usepackage[margin=0.6in]{geometry}
+\usepackage{titlesec}% http://ctan.org/pkg/titlesec
+\usepackage{lipsum}% http://ctan.org/pkg/lipsum
+
+\title{Algorithm Analysis}
+\author{Stephen O'Brien}
+
+% Change amount of space after "Chapter" heading (<after-sep> param)
+\titleformat{\chapter}{\Huge\bfseries}{\chaptername\ \thechapter}{0pt}{\vskip 20pt\raggedright}%
+\titlespacing{\chapter}{0pt}{50pt}{10pt}% \titlespacing{<command>}{<left>}{<before-sep>}{<after-sep>}[<right>]
+
+% Increase table row height globally
+\renewcommand{\arraystretch}{2}
+
+
+\begin{document}
+	\maketitle
+	\chapter{Introduction}
+		\begin{center}
+				\emph{
+					``Flons Law: There is not now, and never will be, a language\\
+					  in which it is the least bit difficult to write bad programs.''
+				}
+		\end{center}
+		
+		\section{Solving a Computational Problem}
+			\begin{itemize}
+			
+				\item Problem definition and specification
+					\begin{itemize}
+						\item specify input, output and constraints
+					\end{itemize}		
+								
+				\item Algorithm Design and Analysis
+					\begin{itemize}
+						\item devise a correct and efficient algorithm
+					\end{itemize}				
+					
+				\item Implementation Planning
+				
+				\item Coding, Testing and Verification
+			\end{itemize}			
+			
+		\section{Algorithm Fundamentals}
+			\begin{itemize}
+				\item Asymptotic Notation
+				\item Recurrence
+				\item etc...
+			\end{itemize}
+			
+	\chapter{Iterative and Divide and Conquer Algorithms}
+		\section{Outline}
+			\begin{itemize}
+				\item Growth Functions
+					\begin{itemize}
+						\item Mathematical specification of growth functions
+					\end{itemize}
+				\item Iterative Algorithms
+				\item Divide and Conquer Algorithms
+			\end{itemize}
+
+		\section{Analyzing Algorithms}
+			\begin{itemize}
+				
+				\item \textbf{Assumptions}: a generic one processor, random access machine. 
+				
+				\item \textbf{Worst Case Running Time}: 
+					
+					\begin{itemize}				
+
+						\item the \emph{longest} time for any input of size \emph{n}.
+
+						\item in some cases like searching, this is close (??)
+
+					\end{itemize}
+					
+				\item \textbf{Average Case Behaviour}:
+					\begin{itemize}				
+						\item it is generally better than the worst case behaviour
+						\item sometimes it's roughly as bad as worst case
+					\end{itemize}
+			\end{itemize}
+			
+			\subsection{Notation: Growth Functions}
+					{\renewcommand{\arraystretch}{2}%						
+					\begin{tabular}{  l  c  r  }
+
+					  	Theta 		& $ f(n) = \Theta(g(n)) $ 	& $ f(n) \approx c.g(n) $ \\
+
+						Big O 		& $ f(n) = O(g(n)) $		& $f(n) \leq c.g(n)	 $ \\
+						
+						Omega		& $ f(n) = \Omega(g(n)) $ 	& $ f(n) \geq c.g(n) $ \\
+						
+						Little O		& $ f(n) = o(g(n)) $		& $ f(n) < c.g(n) $ \\
+						
+						Little Omega	& $ f(n) = \omega(g(n)) $	& $ f(n) > c.g(n) $ \\
+
+					\end{tabular}}
+\end{document}
