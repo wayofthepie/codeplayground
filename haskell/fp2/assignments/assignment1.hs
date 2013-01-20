@@ -21,6 +21,7 @@ minValue (Node lSub x _)    | (isEmptyBST lSub) = x
 maxValue :: Ord a => BST a -> a
 maxValue (Node _ x rSub) | (isEmptyBST rSub) = x
                          | otherwise = maxValue rSub    
+
 {-
     4. height bst : height of the BST "bst"
 -}
