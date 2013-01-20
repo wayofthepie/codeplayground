@@ -1,0 +1,6 @@
+\contentsline {chapter}{\numberline {1}Project Euler}{3}
+\contentsline {section}{\numberline {1.1}Problem One}{3}
+\contentsline {subsection}{\numberline {1.1.1}Solution One}{3}
+\contentsline {subsubsection}{Haskell}{3}
+\contentsline {subsection}{\numberline {1.1.2}Closed Solution}{3}
+\contentsline {subsubsection}{Haskell}{3}
