@@ -7,10 +7,10 @@ numLeaves :: Ord a => BST a -> Int
 numLeaves EmptyBST              = 0
 numLeaves (Node lSub _ rSub)    | (isEmptyBST lSub && isEmptyBST rSub ) = 1
                                 | otherwise = numLeaves lSub + numLeaves rSub
+
 {-
     2. minValue bst : minimum value in the BST "bst"
 -}
-
 minValue :: Ord a => BST a -> a
 minValue (Node lSub x _)    | (isEmptyBST lSub) = x
                             | otherwise = minValue lSub
@@ -37,6 +37,7 @@ occurs v (Node lSub x rSub) | v < x     = occurs v lSub
                             | v > x     = occurs v rSub                            
                             | otherwise = True
 occurs _ EmptyBST           = False
+
 {-
     6. mirror bst : a mirror image of the BST "bst"
 -}
