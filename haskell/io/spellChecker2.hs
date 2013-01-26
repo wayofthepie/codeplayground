@@ -12,11 +12,12 @@ main = do
         errs = mapMaybe (spell dict) (words g)
     write errs
 
-
+spell :: Ord a => Set a -> a -> Maybe a
 spell d w | w `notMember` d = Just w
           | otherwise = Nothing
          
-readFiles :: IO()
+
+readFiles :: IO([Char], [Char])
 readFiles = do
     [s] <- getArgs
     f   <- readFile "/usr/share/dict/words"
