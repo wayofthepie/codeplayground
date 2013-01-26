@@ -8,17 +8,15 @@ var eventStream = require('event-stream');
 var file        = require('fs')
                     .createWriteStream(__dirname + '/logs.json', {flags: 'a'});
 
+var server      = net.createServer();
+
 var stringifier = eventStream.mapSync(function(data) {
     return JSON.stringify(data) + '\n'
 });
 
-var server      = net.createServer();
-
-function identity(o) {
+var source = eventStream.mapSync(function(o) {
     return o;
-}
-
-var source = eventStream.mapSync(identity);
+});
 
 source
     .pipe(stringifier)

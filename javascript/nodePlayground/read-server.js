@@ -8,9 +8,7 @@ module.exports = function(source) {
     
     
     server.on('connection', function(socket) {
-        var jsonStram = new JSONStream();
-        
-        var started = true;
+        var started = false;
         
         var stringifier = eventStream.mapSync(function(data) {
             return JSON.stringify(data) + '\n';
@@ -37,18 +35,20 @@ module.exports = function(source) {
                  */
                 pup.pipe(source, stringifier);
                 pup.pipe(stringifier, socket);
-                
+                console.log(started)
                 started = true;                
             },
-            stop: end
-            
+            stop: end           
         };
+        
         /*
          * {"action" : "start"} | {"action" : "stop"} 
          */
-        jsonStream('data', function(command) {
+        var jsonStream = new JSONStream();
+        jsonStream.on('data', function(command) {
             var action = command.action;
-            if(action && actions[action]) action[action](command);
+            
+            if(action && actions[action]) actions[action](command);
         });
         
         socket.pipe(jsonStream);
