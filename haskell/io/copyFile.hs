@@ -1,5 +1,6 @@
 {-
-    File IO
+    Copies file given by hte first argument to a 
+    new file given by the second argument
 -}
 import System.Environment
 
