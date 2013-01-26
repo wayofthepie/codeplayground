@@ -10,7 +10,7 @@ main = do
     mapM_ (spell dict) (words g)
 
 
--- spell : Prints the word 'w' if it does not exist in the dictionary 'd'    
+-- spell : Prints the word 'w' if it does not exist in the dictionary 'd'   
 
 spell :: Set [Char] -> [Char] -> IO()
 spell d w = when (w `notMember` d) (putStrLn w)
