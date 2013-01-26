@@ -8,6 +8,7 @@ module.exports = function(source) {
     
     
     server.on('connection', function(socket) {
+        var filter;
         var started = false;
         
         var stringifier = eventStream.mapSync(function(data) {
@@ -18,7 +19,8 @@ module.exports = function(source) {
          * Unbind all the pipes
          */
         function end() {
-            pup.unpipe(source, stringifier);
+            pup.unpipe(source, filter);
+            pup.unpipe(filter,stringifier);
             pup.unpipe(stringifier, socket);
             started = false;
         }
@@ -26,14 +28,35 @@ module.exports = function(source) {
         var actions = {
             start: function(command) {
                 if(started) return;
-              
+                
                 /**
-                 * Effectively:
-                 * source
-                 * .pipe(stringifier)
-                 * .pipe(socket);
+                 * If the filter option is specified contruct a new function 
+                 * object with command.filter as the body, e.g. 
+                 * {"action":"start", "filter": "return ev.a 
+                 *      && ev.a.charAt(0) == 'A';"}
                  */
-                pup.pipe(source, stringifier);
+                if(command.filter) {
+                    command.filter = new Function('ev', command.filter);
+                } 
+                
+                /**
+                 * If no filter is specified, or a non-function is specified 
+                 * as a filter do not filter data, i.e. turn the filter into 
+                 * a function that always returns true.
+                 */
+                if(!command.filter || typeof command.filter != 'function') {
+                    command.filter = function() { return true; }
+                }
+                
+                /**
+                 * If the data (event) gets through the filter return it.
+                 */
+                filter = eventStream.mapSync(function(event) {
+                    if(command.filter(event)) return event;
+                });
+                
+                pup.pipe(source,filter)
+                pup.pipe(filter, stringifier);
                 pup.pipe(stringifier, socket);
                 console.log(started)
                 started = true;                
@@ -41,9 +64,6 @@ module.exports = function(source) {
             stop: end           
         };
         
-        /*
-         * {"action" : "start"} | {"action" : "stop"} 
-         */
         var jsonStream = new JSONStream();
         jsonStream.on('data', function(command) {
             var action = command.action;
