@@ -69,6 +69,13 @@ outEdges :: Node -> Graph -> [ Edge ]
 
 --------------------------------------------------------------------------------
 
+-- deleteNode n g : removes the given node from the graph
+deleteNode :: Node -> Graph -> Graph
+    
+
+--------------------------------------------------------------------------------
+-- deleteEdge e g : deletes an edge from the graph
+deleteEdge :: Edge -> Graph -> Graph
 
 --------------------------------------------------------------------------------
 -- I M P L E M E N T A T I O N  :  P R I V A T E
@@ -92,15 +99,21 @@ insertNode n (G xs) | null $ filter (\(x,_) -> x == n) xs = G ((n, []):xs)
                     | otherwise = error "Node already exists!!"
 
                     
-insertEdge e (G xs) | edgeExists   e (edges (G xs))   = error "Edge already exists in graph!!"
-                    | not $ possibleEdge e (nodes (G xs))   = error "Node(s) do not exist!!"
-                    | otherwise = G( insertEdge' e (head xs) (tail xs) )
+insertEdge e (G xs) 
+    | edgeExists   e (edges (G xs))   = error "Edge already exists in graph!!"
+    | not $ possibleEdge e (nodes (G xs))   = error "Node(s) do not exist!!"
+    | otherwise = G( insertEdge' e (head xs) (tail xs) )
                
                
-outEdges n (G ([]))         = error "Node does not exist!"                    
+outEdges n (G ([]))         = error "Node does not exist!!"                    
 outEdges n (G ((x, es):xs)) | n == x = es
                             | otherwise = outEdges n (G xs)
     
+              
+deleteEdge e (G [])         = error "Cannot delete edge: graph is empty!!" 
+deleteEdge e (G ( x : xs )) = G( deleteEdge' e x xs )
+        
+
 {- Helper functions -}
 -- fromNode e : the node this Edge starts at
 fromNode :: Edge -> Node
@@ -114,9 +127,10 @@ toNode (_, n, _) = n
 
 -- edgeExists e g : whether Edge e already exists in this Graph
 edgeExists :: Edge -> [Edge] -> Bool
-edgeExists e es   | null $ filter p es = False
+edgeExists e es   | null $ filter p es = False 
                   | otherwise = True
-    where p = (\x -> ((fromNode x) == (fromNode e) && (toNode x) == (toNode e)))
+    where p = 
+        (\x -> ((fromNode x) == (fromNode e) && (toNode x) == (toNode e)))
 
     
 -- possibleEdge e g : checks if the nodes of this edge exist
@@ -132,9 +146,10 @@ insertEdge' e x ys  | fromNode e == fst x = (fst x, e: snd x) : ys
                     | otherwise =  x : insertEdge' e (head ys) (tail ys) 
 
 
- -- (insertEdge (s2n "a", s2n "b", 2) (insertEdge (s2n "a", s2n "b", 2) (insertEdge (s2n "a", s2n "b", 1) (insertNode (s2n "c") ((insertNode (s2n "b") (insertNode (s2n "a") emptyGraph)))))))
-
-
-
+deleteEdge' :: Edge -> (Node, [Edge]) -> [(Node, [Edge])] -> [(Node, [Edge])]
+deleteEdge' _ _ [] = error "Cannot delete edge: edge does not exist in graph!!"
+deleteEdge' e (n, es) xs  
+    | fromNode e    == n && edgeExists e es = (n, filter (/= e) es) : xs
+    | otherwise     = (n, es) : deleteEdge' e (head xs) (tail xs)
 
 
