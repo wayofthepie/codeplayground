@@ -1,13 +1,13 @@
 module GRAPH ( Graph, Node, Edge,
                emptyGraph, nodes, edges, s2n, n2s,
-               insertNode, insertEdge, outEdges ) where
+               insertNode, insertEdge ) where
 
 --------------------------------------------------------------------------------
 -- I N T E R F A C E  :  P U B L I C
 --------------------------------------------------------------------------------
 
 -- Graph : an unweighted directed graph
-newtype Graph = G ([Node], [Edge]) deriving Show
+newtype Graph = G ( [ ( Node, [Edge]) ] ) deriving Show
 --------------------------------------------------------------------------------
 
 -- Node : a node
@@ -66,55 +66,73 @@ insertEdge :: Edge -> Graph -> Graph
 
 outEdges :: Node -> Graph -> [ Edge ]
 
+
 --------------------------------------------------------------------------------
+
 
 --------------------------------------------------------------------------------
 -- I M P L E M E N T A T I O N  :  P R I V A T E
 --------------------------------------------------------------------------------
-emptyGraph = G ([], [])
+emptyGraph = G ([])
 
-nodes (G (ns, _)) = ns
 
-edges (G (_, es)) = es
+nodes (G xs) = map fst xs
 
-s2n x       = N (x)
 
-n2s (N (x)) = x
+edges (G xs) = concat (map snd xs)
 
-insertNode n (G (ns, es))   | null $ filter (==n) ns = G (n:ns, es) 
-                            | otherwise = error "Node already exists!"
 
-insertEdge e (G (ns, es))   | edgeExists e (G (ns, es))     = error "Edge already exists in graph!"
-                            | possibleEdge e (G (ns, es))   = error "Node(s) do not exist!!"
-                            | otherwise = G (ns, e:es)
+s2n x     = N x
 
-outEdges n (G (_, es))     = filter (\e -> n == fromNode e) es
 
--- Helper
+n2s (N x) = x
+
+
+insertNode n (G xs) | null $ filter (\(x,_) -> x == n) xs = G ((n, []):xs) 
+                    | otherwise = error "Node already exists!!"
+
+                    
+insertEdge e (G xs) | edgeExists   e (edges (G xs))   = error "Edge already exists in graph!!"
+                    | not $ possibleEdge e (nodes (G xs))   = error "Node(s) do not exist!!"
+                    | otherwise = G( insertEdge' e (head xs) (tail xs) )
+               
+               
+outEdges n (G ([]))         = error "Node does not exist!"                    
+outEdges n (G ((x, es):xs)) | n == x = es
+                            | otherwise = outEdges n (G xs)
+    
+{- Helper functions -}
 -- fromNode e : the node this Edge starts at
 fromNode :: Edge -> Node
 fromNode (n, _, _) = n
 
+
 -- fromNode e : the node this Edge points to
 toNode :: Edge -> Node
 toNode (_, n, _) = n
-Co
+
+
 -- edgeExists e g : whether Edge e already exists in this Graph
+edgeExists :: Edge -> [Edge] -> Bool
+edgeExists e es   | null $ filter p es = False
+                  | otherwise = True
+    where p = (\x -> ((fromNode x) == (fromNode e) && (toNode x) == (toNode e)))
 
-edgeExists :: Edge -> Graph -> Bool
-edgeExists e (G (_, es))    | null $ filter f es = False
-                            | otherwise = True
-    where f = (\x -> ((fromNode x) == (fromNode e) && (toNode x) == (toNode e)))
-          
--- pathExists e g : checks if the nodes of this edge exist
-possibleEdge :: Edge -> Graph -> Bool
-possibleEdge e (G (ns, _))  | length (filter (== (fromNode e)) ns) == 2 = True
-                            | otherwise = False
+    
+-- possibleEdge e g : checks if the nodes of this edge exist
+possibleEdge :: Edge -> [Node] -> Bool
+possibleEdge e ns  | length (filter p ns) == 2 = True
+                   | otherwise = False
+    where p = (\x -> x == (fromNode e) || x == (toNode e))
+    
+    
+-- insertEdge e x ys : insert an edge into its source node edge list
+insertEdge' :: Edge -> (Node, [Edge]) -> [(Node, [Edge])] -> [(Node, [Edge])]
+insertEdge' e x ys  | fromNode e == fst x = (fst x, e: snd x) : ys
+                    | otherwise =  x : insertEdge' e (head ys) (tail ys) 
 
 
-
-
- -- (insertEdge (s2n "a", s2n "b", 2) (insertEdge (s2n "a", s2n "b", 1) (insertNode (s2n "c") ((insertNode (s2n "b") (insertNode (s2n "a") emptyGraph))))))
+ -- (insertEdge (s2n "a", s2n "b", 2) (insertEdge (s2n "a", s2n "b", 2) (insertEdge (s2n "a", s2n "b", 1) (insertNode (s2n "c") ((insertNode (s2n "b") (insertNode (s2n "a") emptyGraph)))))))
 
 
 
